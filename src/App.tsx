@@ -1,16 +1,19 @@
-import React from "react";
-import { Counter } from "./components/Counter";
-import logo from "./logo.svg";
+import React, { useState } from "react";
 import "./App.css";
+import { text } from "@storybook/addon-knobs";
 
-export const App: React.FunctionComponent = () => (
-  <div>
-    <header className="flex flex-col items-center justify-center text-lg text-white min-h-screen bg-purple-700">
-      <img src={logo} className="h-40 spin" alt="logo" />
-      <Counter />
-      <a className="text-teal-400" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-        Learn React
-      </a>
-    </header>
-  </div>
-);
+export const App: React.FunctionComponent = () => {
+  const [textFieldContents, setTextFieldContents] = useState("");
+  return (
+    <div>
+      <div className="flex content-center  text-lg text-black min-h-screen bg-white-700">
+        <div className="w-1/3 ml-auto bg-gray-400 flex content-center justify-center">
+          <textarea className="w-9/12 m-6" onChange={(event) => setTextFieldContents(event.target.value)}></textarea>
+        </div>
+        <div className="w-1/3 mr-auto bg-gray-500 flex item-center content-center justify-center">
+          <div className="w-9/12 m-6 text-center">{textFieldContents.length}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
