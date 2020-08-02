@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { verify } from "@govtechsg/oa-verify";
+import { verify, isValid } from "@govtechsg/oa-verify";
 
 export const App: React.FunctionComponent = () => {
   const [textFieldContents, setTextFieldContents] = useState("");
@@ -9,7 +9,7 @@ export const App: React.FunctionComponent = () => {
     async function verifyDocument() {
       try {
         setVerificationResults(
-          JSON.stringify(await verify(JSON.parse(textFieldContents), { network: "ropsten" }), null, 2)
+          JSON.stringify(isValid(await verify(JSON.parse(textFieldContents), { network: "ropsten" })))
         );
         console.log(verificationResults);
       } catch (e) {
