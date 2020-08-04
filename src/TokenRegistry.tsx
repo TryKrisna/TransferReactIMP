@@ -70,6 +70,36 @@ export const TokenRegistryDemo: React.FunctionComponent = () => {
     }
   }, [deployNewTitleEscrow.state, deployNewTitleEscrow.receipt]);
 
+  // before we can use TokenRegistry we must connect to it
+  const handleConnectToTokenRegistry = () => {
+    try {
+      const factory = TradeTrustERC721Factory.connect(TOKEN_REGISTRY_ADDRESS, provider);
+      setTokenRegistry(factory);
+      console.log("Connected to Token Registry!", factory.address);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const mintToTitleEscrow = useContractFunctionHook(tokenRegistry, "safeMint")
+
+  const handleMintToTitleEscrow = (titleEscrowAddress: string) => {
+    let randomTokenId = `0x${BigInt(Math.floor(Math.random() * 1000000000000)).toString(16)}`
+    try {
+      console.log(titleEscrowAddress, randomTokenId)
+      mintToTitleEscrow.send(titleEscrowAddress, randomTokenId, []) // safeMint is necessary as mint cannot send to a smart contract
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => { // called when mintToTitleEscrow.state changes
+    setTextFieldContents(textFieldContents + "\n" + mintToTitleEscrow.state);
+    if (mintToTitleEscrow.error) {
+      console.error("error", mintToTitleEscrow.errorMessage);
+    }
+  }, [mintToTitleEscrow.state]);
+
 
   return (
     <div>
@@ -95,6 +125,18 @@ export const TokenRegistryDemo: React.FunctionComponent = () => {
             onClick={handleDeployNewTitleEscrow}
           >
             deploy title escrow
+          </button>
+          <button
+            className="w-5/6 mx-auto my-2 auto h-16 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+            onClick={handleConnectToTokenRegistry}
+          >
+            connect to TokenRegistry
+          </button>
+          <button
+            className="w-5/6 mx-auto my-2 auto h-16 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+            onClick={() => handleMintToTitleEscrow(titleEscrow?.address ?? "")}
+          >
+            mint to title escrow
           </button>
         </div>
       </div>
