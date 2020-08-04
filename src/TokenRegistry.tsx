@@ -14,6 +14,7 @@ const HOLDER_ADDRESS = "0x123B86fC8FCE13c4A0f452Cd0A8AB5b6b3e3A4f3";
 
 export const TokenRegistryDemo: React.FunctionComponent = () => {
   const [textFieldContents, setTextFieldContents] = useState("");
+  const [transferTarget, setTransferTarget] = useState("");
   const { provider, upgradeProvider, isUpgraded } = useProviderContext();
   const [titleEscrowCreator, setTitleEscrowCreator] = useState<TitleEscrowCreator | undefined>(undefined);
   const [titleEscrow, setTitleEscrow] = useState<TitleEscrow | undefined>(undefined);
@@ -100,6 +101,19 @@ export const TokenRegistryDemo: React.FunctionComponent = () => {
     }
   }, [mintToTitleEscrow.state]);
 
+  const transferToTarget = useContractFunctionHook(titleEscrow, "transferTo");
+
+  const handleTransferToTarget = (targetAddress: string) => {
+    transferToTarget.send(targetAddress);
+  };
+
+  useEffect(() => {
+    // called when transferToTarget.state changes
+    setTextFieldContents(textFieldContents + "\n" + transferToTarget.state);
+    if (transferToTarget.error) {
+      console.error("error", transferToTarget.errorMessage);
+    }
+  }, [transferToTarget.state]);
 
   return (
     <div>
@@ -137,6 +151,17 @@ export const TokenRegistryDemo: React.FunctionComponent = () => {
             onClick={() => handleMintToTitleEscrow(titleEscrow?.address ?? "")}
           >
             mint to title escrow
+          </button>
+          <input
+            className="w-5/6 mx-auto my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="target address..."
+            onChange={(event) => setTransferTarget(event.target.value)}
+          ></input>
+          <button
+            className="w-5/6 mx-auto my-2 auto h-16 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+            onClick={() => handleTransferToTarget(transferTarget)}
+          >
+            transfer to target
           </button>
         </div>
       </div>
